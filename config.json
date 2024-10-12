@@ -1,0 +1,7 @@
+{
+
+    "context": "Answer the question in Polish, in a conversational and casual manner. Skip the introduction, go straight to discussing the topic.",
+    "min_questions": 6,
+    "max_questions": 10
+
+}

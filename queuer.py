@@ -2,17 +2,18 @@
 from dotenv import load_dotenv
 from random import randrange
 from openai import OpenAI
+import json
 import os
 # Written in Python 3.11.2
 
 
-def chatGPT(prompt, max_zdania_context = ""):
+def chatGPT(prompt, randSentance_context = ""):
     response = OpenAI().chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4-0125-preview",
         messages=[
             {
              "role": "system",
-             "content": max_zdania_context + os.getenv('CONTEXT')
+             "content": randSentance_context + os.getenv('CONTEXT')
             },
 
             {
@@ -31,21 +32,22 @@ def chatGPT(prompt, max_zdania_context = ""):
 
 if __name__ == "__main__":
     load_dotenv()
-
-    PYTANIA = open('questions.txt', 'r').readlines()
+    CONFIG = json.load(open('config.json', 'r'))
+    QUESTIONS = open('questions.txt', 'r').readlines()
     i = 1;
-    
-    for linia in PYTANIA:
-        pytanie = linia.strip()
 
-        if pytanie == "":
+
+    for linia in QUESTIONS:
+        question = linia.strip()
+
+        if question == "":
             continue
 
-        max_zdania = randrange(int(os.getenv('MIN_QUESTIONS')), int(os.getenv('MAX_QUESTIONS')) + 1)
-        odpowiedz = chatGPT(pytanie, f"Odpowiedz w {max_zdania} zdaniach. ")
+        randSentance = randrange(int( CONFIG['min_questions'] ), int( CONFIG['max_questions'] ) + 1)
+        response = chatGPT(question, f"Response in {randSentance} sentences. ")
 
-        print(pytanie + "\n" + odpowiedz + "\n")
-        with open(f"./answers/{i} {pytanie[:40]}.txt", 'w') as answer:
-            answer.write(odpowiedz)
+        print(question + "\n" + response + "\n")
+        with open(f"./answers/{i} {question[:40]}.txt", 'w') as answer:
+            answer.write(response)
         
         i += 1
